@@ -34,7 +34,7 @@ function listar_directorio() {
 }
 
 function crear_archivo() {
-    read -p "Ingrese el nombre del archivo a crear: " nombre_archivo
+    read -p "Ingrese el nombre del archivo que quiere crear: " nombre_archivo
     read -p "Ingrese el contenido: " contenido_archivo
     echo "$contenido_archivo" > "$nombre_archivo"
     echo "Archivo '$nombre_archivo' creado."
