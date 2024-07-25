@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 function mostrar_menu() {
     echo "Seleccione una opción:"
     echo "1. Crear directorio"
