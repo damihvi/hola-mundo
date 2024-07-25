@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 function mostrar_menu() {
     echo "Seleccione una opción:"
@@ -23,9 +23,13 @@ function crear_directorio() {
 
 function listar_directorio() {
     read -p "Ingrese el nombre del directorio: " nombre_directorio
-    cd "$nombre_directorio" || { echo "Directorio no encontrado"; return; }
-    ls -las
-    cd - > /dev/null
+    if [ -d "$nombre_directorio" ]; then
+        cd "$nombre_directorio" || return
+        ls -las
+        cd - > /dev/null
+    else
+        echo "Directorio no encontrado"
+    fi
 }
 
 function crear_archivo() {
@@ -34,61 +38,88 @@ function crear_archivo() {
     echo "$contenido_archivo" > "$nombre_archivo"
     echo "Archivo '$nombre_archivo' creado."
 }
+
 function ver_archivo() {
     read -p "Ingrese el nombre del archivo que quiere ver: " nombre_archivo
-    cat "$nombre_archivo"
+    if [ -f "$nombre_archivo" ]; then
+        cat "$nombre_archivo"
+    else
+        echo "Archivo no encontrado"
+    fi
 }
 
 function eliminar_archivo() {
-    read -p "Ingrese el nombre del archivo que quiere  eliminar: " nombre_archivo
-    rm "$nombre_archivo"
-    echo "Archivo '$nombre_archivo' eliminado exitosamente."
+    read -p "Ingrese el nombre del archivo que quiere eliminar: " nombre_archivo
+    if [ -f "$nombre_archivo" ]; then
+        rm "$nombre_archivo"
+        echo "Archivo '$nombre_archivo' eliminado exitosamente."
+    else
+        echo "Archivo no encontrado"
+    fi
 }
 
 function codificar_base64() {
     read -p "Ingrese el nombre del archivo que quiere codificar: " nombre_archivo
-    base64 "$nombre_archivo" > "$nombre_archivo.b64"
-    echo "el archivo codificado se guardo como '$nombre_archivo.b64'."
+    if [ -f "$nombre_archivo" ]; then
+        base64 "$nombre_archivo" > "$nombre_archivo.b64"
+        echo "El archivo codificado se guardó como '$nombre_archivo.b64'."
+    else
+        echo "Archivo no encontrado"
+    fi
 }
 
 function decodificar_base64() {
-    read -p "Ingrese el nombre del archivo a decodificar sin la extension .b64: " nombre_archivo
-    base64 -d "$nombre_archivo.b64" > "$nombre_archivo.decodificado"
-    echo "el archivo decodificado se guardo como '$nombre_archivo.decodificado'."
+    read -p "Ingrese el nombre del archivo a decodificar sin la extensión .b64: " nombre_archivo
+    if [ -f "$nombre_archivo.b64" ]; then
+        base64 -d "$nombre_archivo.b64" > "$nombre_archivo.decodificado"
+        echo "El archivo decodificado se guardó como '$nombre_archivo.decodificado'."
+    else
+        echo "Archivo codificado no encontrado"
+    fi
 }
 
 function buscar_archivos() {
-    read -p "Ingrese el nombre del archivo que quiere  buscar: " nombre_archivo
+    read -p "Ingrese el nombre del archivo que quiere buscar: " nombre_archivo
     find . -name "$nombre_archivo"
 }
 
 function mover_archivo() {
-    read -p "Ingrese el nombre del archivo que quiere  mover: " nombre_archivo
+    read -p "Ingrese el nombre del archivo que quiere mover: " nombre_archivo
     read -p "Ingrese el directorio al que quiere mover el archivo: " directorio_destino
-    mv "$nombre_archivo" "$directorio_destino"
-    echo "Archivo '$nombre_archivo' movido a '$directorio_destino'."
+    if [ -f "$nombre_archivo" ] && [ -d "$directorio_destino" ]; then
+        mv "$nombre_archivo" "$directorio_destino"
+        echo "Archivo '$nombre_archivo' movido a '$directorio_destino'."
+    else
+        echo "Archivo o directorio no encontrado"
+    fi
 }
+
 function copiar_archivo() {
     read -p "Ingrese el nombre del archivo que quiere copiar: " nombre_archivo
     read -p "Ingrese el directorio al que quiere copiarlo: " directorio_destino
-    cp "$nombre_archivo" "$directorio_destino"
-    echo "Archivo '$nombre_archivo' copiado a '$directorio_destino'."
+    if [ -f "$nombre_archivo" ] && [ -d "$directorio_destino" ]; then
+        cp "$nombre_archivo" "$directorio_destino"
+        echo "Archivo '$nombre_archivo' copiado a '$directorio_destino'."
+    else
+        echo "Archivo o directorio no encontrado"
+    fi
 }
 
 while true; do
-    menu
-    read -p "opcion: " opcion
+    mostrar_menu
+    read -p "Opción: " opcion
     case $opcion in
         1) crear_directorio ;;
-        2) listar_directorios ;;
-        3) crear_archivos ;;
-        4) mostrar_archivos ;;
-        5) borrar_archivos ;;
+        2) listar_directorio ;;
+        3) crear_archivo ;;
+        4) ver_archivo ;;
+        5) eliminar_archivo ;;
         6) codificar_base64 ;;
         7) decodificar_base64 ;;
-        8) buscar_archivos_por_nombre ;;
-        9) mover_archivos ;;
-        10) copiar_archivos ;;
+        8) buscar_archivos ;;
+        9) mover_archivo ;;
+        10) copiar_archivo ;;
         11) echo "Saliendo"; exit 0 ;;
-esac
+        *) echo "Opción no válida, por favor seleccione una opción del 1 al 11." ;;
+    esac
 done
