@@ -1,0 +1,94 @@
+!/bin/bash
+
+function mostrar_menu() {
+    echo "Seleccione una opción:"
+    echo "1. Crear directorio"
+    echo "2. Listar directorios"
+    echo "3. Crear un archivo"
+    echo "4. Ver el contenido de un archivo"
+    echo "5. Eliminar un archivo"
+    echo "6. Codificar en base64"
+    echo "7. Decodificar base64"
+    echo "8. Buscar archivos por nombre"
+    echo "9. Mover archivos entre directorios"
+    echo "10. Copiar archivos"
+    echo "11. Salir"
+}
+
+function crear_directorio() {
+    read -p "Ingrese el nombre del nuevo directorio: " nombre_directorio
+    mkdir -p "$nombre_directorio"
+    echo "Directorio '$nombre_directorio' creado."
+}
+
+function listar_directorio() {
+    read -p "Ingrese el nombre del directorio: " nombre_directorio
+    cd "$nombre_directorio" || { echo "Directorio no encontrado"; return; }
+    ls -las
+    cd - > /dev/null
+}
+
+function crear_archivo() {
+    read -p "Ingrese el nombre del archivo a crear: " nombre_archivo
+    read -p "Ingrese el contenido: " contenido_archivo
+    echo "$contenido_archivo" > "$nombre_archivo"
+    echo "Archivo '$nombre_archivo' creado."
+}
+function ver_archivo() {
+    read -p "Ingrese el nombre del archivo que quiere ver: " nombre_archivo
+    cat "$nombre_archivo"
+}
+
+function eliminar_archivo() {
+    read -p "Ingrese el nombre del archivo que quiere  eliminar: " nombre_archivo
+    rm "$nombre_archivo"
+    echo "Archivo '$nombre_archivo' eliminado exitosamente."
+}
+
+function codificar_base64() {
+    read -p "Ingrese el nombre del archivo que quiere codificar: " nombre_archivo
+    base64 "$nombre_archivo" > "$nombre_archivo.b64"
+    echo "el archivo codificado se guardo como '$nombre_archivo.b64'."
+}
+
+function decodificar_base64() {
+    read -p "Ingrese el nombre del archivo a decodificar sin la extension .b64: " nombre_archivo
+    base64 -d "$nombre_archivo.b64" > "$nombre_archivo.decodificado"
+    echo "el archivo decodificado se guardo como '$nombre_archivo.decodificado'."
+}
+
+function buscar_archivos() {
+    read -p "Ingrese el nombre del archivo que quiere  buscar: " nombre_archivo
+    find . -name "$nombre_archivo"
+}
+
+function mover_archivo() {
+    read -p "Ingrese el nombre del archivo que quiere  mover: " nombre_archivo
+    read -p "Ingrese el directorio al que quiere mover el archivo: " directorio_destino
+    mv "$nombre_archivo" "$directorio_destino"
+    echo "Archivo '$nombre_archivo' movido a '$directorio_destino'."
+}
+function copiar_archivo() {
+    read -p "Ingrese el nombre del archivo que quiere copiar: " nombre_archivo
+    read -p "Ingrese el directorio al que quiere copiarlo: " directorio_destino
+    cp "$nombre_archivo" "$directorio_destino"
+    echo "Archivo '$nombre_archivo' copiado a '$directorio_destino'."
+}
+
+while true; do
+    menu
+    read -p "opcion: " opcion
+    case $opcion in
+        1) crear_directorio ;;
+        2) listar_directorios ;;
+        3) crear_archivos ;;
+        4) mostrar_archivos ;;
+        5) borrar_archivos ;;
+        6) codificar_base64 ;;
+        7) decodificar_base64 ;;
+        8) buscar_archivos_por_nombre ;;
+        9) mover_archivos ;;
+        10) copiar_archivos ;;
+        11) echo "Saliendo"; exit 0 ;;
+esac
+done
